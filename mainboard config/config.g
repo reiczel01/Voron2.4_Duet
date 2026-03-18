@@ -18,8 +18,8 @@ M955 P121.0 I16 ; configure accelerometer on board #121
 M569 P0.0 S1 D2 V2000 ; driver 0.0 (Z motor )
 M569 P0.1 S1 D2 V2000 ; driver 0.1 (Z motor 2)
 M569 P0.2 S0 D2 V2000 ; driver 0.2 (Z motor 3)
-M569 P0.3 S0 D2 V2000 ; driver 0.3 (Y axis)
-M569 P0.4 S0 D2 V2000 ; driver 0.4 (X axis)
+M569 P0.3 S0 D2 V6000 ; driver 0.3 (Y axis)
+M569 P0.4 S0 D2 V6000 ; driver 0.4 (X axis)
 M569 P0.5 S1 D2 V2000 ; driver 0.5 (Z motor 4)
 M569 P121.0 S0 D2 ; driver 121.0 (extruder 0)
 
@@ -34,12 +34,15 @@ M906 X1500 Y1500 Z800 ; set axis driver currents
 M92 X160 Y160 Z400 ; configure steps per mm
 M208 X0:348 Y0:358 Z0:318.64 ; set minimum and maximum axis limits
 M566 X450 Y450 Z350 ; set maximum instantaneous speed changes (mm/min)
-M204 P3500 T5500 Z3400 ; set maximum speeds (mm/min) M203 X18000 Y18000 Z3400
-M201 X6500 Y6500 Z450 ; set accelerations (mm/s^2) M201 X8000 Y8000 Z450
-M204 P3500 T5500 ; Set printing acceleration and travel accelerations M204 P4000 T6000
+;M204 P3500 T5500 Z3400 ; set maximum speeds (mm/min) M203 X18000 Y18000 Z3400
+M203 X27000 Y27000 Z1800 E7200
+M201 X10000 Y10000 Z450 ; set accelerations (mm/s^2) M201 X8000 Y8000 Z450
+M204 P4000 T10000;M204 P3500 T5500 ; Set printing acceleration and travel accelerations M204 P4000 T6000
 
 ; Custom shaper — lepsze tłumienie wielu rezonansów
-  M593 P"mzv" F41 S0.10
+M593 P"mzv" F41 S0.10
+M556 S100 X-0.513
+
 
 ; Extruders
 M584 E121.0 ; set extruder mapping
@@ -48,8 +51,8 @@ M906 E800 ; set extruder driver currents
 M92 E408.16327 ; configure steps per mm
 M566 E120 ; set maximum instantaneous speed changes (mm/min)
 M203 E3600 ; set maximum speeds (mm/min)
-M201 E250 ; set accelerations (mm/s^2)
-M572 D0 S0.055 ; presure advance (poprzednia wrtosc 0.037)
+M201 E1500 ; set accelerations (mm/s^2)
+M572 D0 S0.05 ; presure advance (poprzednia wrtosc 0.037)
 
 
 ; Kinematics
@@ -76,6 +79,8 @@ M557 X25:325 Y25:325 S40 P5:5 ; define grid for mesh bed compensation
 M308 S0 P"temp0" Y"thermistor" A"Heated Bed" T100000 B4725 C7.06e-8 ; configure sensor #0
 M308 S1 P"121.temp0" Y"pt1000" A"Nozzle" ; configure sensor #1
 M308 S2 P"temp1" Y"pt1000" A"Enclosure" ; configure sensor #2
+M308 S10 Y"mcu-temp" A"MCU"
+M308 S11 Y"drivers"  A"Stepper drivers"
 
 ; Heaters
 M950 H0 C"out0" T0 ; create heater #0
@@ -96,11 +101,14 @@ M950 F1 C"121.out1" Q500 ; create fan #1 (hotend fan) with a PWM frequency of 50
 M106 P1 S1 H1 T45 ; set fan #1 to turn on when the hotend temperature exceeds 45C
 
 M950 F2 C"out3" Q500 ; create fan #2 (board cooling fan) with a PWM frequency of 500Hz
-M106 P2 S0 H0 T50 ; set fan #2 to be controlled manually
+M106 P2 S0 H1 T50  ; set fan #2 to be controlled manually
 
 M950 F3 C"out2" Q500 ; create fan #2 (board cooling fan) with a PWM frequency of 500Hz
 M106 P3 S0 H0 T50 ; set fan #2 to be controlled manually
 
+M950 F4 C"out1" Q500
+M106 P4 H10 T50
+M106 P4 H11 T100
 
 ; Tools
 M563 P0 D0 H1 F0 ; create tool #0
@@ -111,6 +119,5 @@ M950 E0 C"io3.out" T1 Q3000000   ; create a RGB Neopixel LED strip on the LED po
 
 M150 E0 R255 P128 S20 F1     ; set first 20 LEDs to red, half brightness, more commands for the strip follow
 M150 E0 U255 B255 P255 S20
-
 
 
